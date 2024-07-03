@@ -3,5 +3,6 @@ uploads/*
 backups/*
 instance/*
 __pycache__/*
+app/__pycache__/*
 9823/*
 Modelfile

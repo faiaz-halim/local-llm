@@ -50,7 +50,7 @@ def chat():
 @login_required
 def process_message():
     message = request.json['message']
-    response = process_chat(message, model_name="mistral-custom")
+    response = process_chat(message, model_name="mistral")
     chat = Chat(user_id=current_user.id, message=message, response=response, timestamp=datetime.utcnow())
     db.session.add(chat)
     db.session.commit()
