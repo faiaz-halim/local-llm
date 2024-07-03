@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with LLM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Chat Interface</h1>
+    <div>
+        <label for="model-select">Select Model:</label>
+        <select id="model-select">
+            <!-- Model options will be loaded here -->
+        </select>
+    </div>
+    <div id="chat-interface">
+        <!-- Chat interface will be here -->
+    </div>
+    <form id="chat-form">
+        <input type="text" id="user-input" placeholder="Type your message here...">
+        <button type="submit">Send</button>
+    </form>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

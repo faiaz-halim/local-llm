@@ -1,0 +1,13 @@
+Flask==2.1.1
+Flask-SQLAlchemy==2.5.1
+Flask-Migrate==3.1.0
+Flask-WTF==1.0.0
+Werkzeug==2.1.1
+PyPDF2==1.26.0
+python-docx==0.8.11
+transformers
+torch
+SQLAlchemy==1.3.24
+python-dotenv
+huggingface_hub
+gitpython

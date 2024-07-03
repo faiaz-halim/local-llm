@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Admin Page</h1>
+    <h2>Chat History</h2>
+    <div id="chat-history">
+        <!-- Chat history will be loaded here -->
+    </div>
+    <h2>Upload Documents</h2>
+    <form action="{{ url_for('upload_files') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".txt,.pdf,.docx">
+        <button type="submit">Upload</button>
+    </form>
+    <h2>Retrain Model</h2>
+    <form action="{{ url_for('retrain_model') }}" method="post">
+        <button type="submit">Retrain</button>
+    </form>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
