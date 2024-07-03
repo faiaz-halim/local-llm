@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Admin - Chat History</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>User</th>
+            <th>Message</th>
+            <th>Response</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for chat in chats %}
+        <tr>
+            <td>{{ chat.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>{{ chat.user.username }}</td>
+            <td>{{ chat.message }}</td>
+            <td>{{ chat.response }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

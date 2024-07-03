@@ -1,0 +1,9 @@
+Flask
+Flask-SQLAlchemy
+Flask-Login
+PyPDF2
+python-docx
+transformers
+torch
+requests
+werkzeug

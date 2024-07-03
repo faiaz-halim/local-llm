@@ -1,0 +1,7 @@
+models/*
+uploads/*
+backups/*
+instance/*
+__pycache__/*
+9823/*
+Modelfile
