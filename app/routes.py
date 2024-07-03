@@ -7,6 +7,7 @@ from app import app, db
 from app.models import ChatHistory, UploadedFile
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import git
+import subprocess
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 MODELS_FOLDER = os.path.join(os.getcwd(), 'models')
@@ -27,16 +28,24 @@ def clone_repo(repo_url, clone_dir, username, token):
     if not os.path.exists(clone_dir):
         os.makedirs(clone_dir, exist_ok=True)
         repo_url_with_auth = repo_url.replace("https://", f"https://{username}:{token}@")
-        git.Repo.clone_from(repo_url_with_auth, clone_dir, branch='main')
+        repo = git.Repo.clone_from(repo_url_with_auth, clone_dir, branch='main')
+        # Ensure LFS files are fetched
+        subprocess.run(["git", "lfs", "install"], cwd=clone_dir)
+        subprocess.run(["git", "lfs", "fetch"], cwd=clone_dir)
+        subprocess.run(["git", "lfs", "pull"], cwd=clone_dir)
 
 def load_model(model_path):
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
     model = AutoModelForCausalLM.from_pretrained(model_path)
     return tokenizer, model
 
 # Clone the repository if it doesn't exist
 clone_repo(REPO_URL, MODEL_PATH, HUGGINGFACE_USERNAME, HUGGINGFACE_TOKEN)
-tokenizer, model = load_model(MODEL_PATH)
+try:
+    tokenizer, model = load_model(MODEL_PATH)
+except Exception as e:
+    print(f"Error loading model: {e}")
+    raise
 
 @app.route('/')
 def chat():
