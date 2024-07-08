@@ -6,16 +6,15 @@ from werkzeug.utils import secure_filename
 from app import app, db
 from app.models import ChatHistory, UploadedFile
 from transformers import AutoModelForCausalLM, AutoTokenizer
-import git
-import subprocess
+from huggingface_hub import snapshot_download
+from tqdm.auto import tqdm
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 MODELS_FOLDER = os.path.join(os.getcwd(), 'models')
 BACKUPS_FOLDER = os.path.join(os.getcwd(), 'backups')
 MODEL_PATH = os.path.join(MODELS_FOLDER, 'mistral-7b-instruct-v0.3')
 HUGGINGFACE_TOKEN = app.config['HUGGINGFACE_TOKEN']
-REPO_URL = app.config['REPO_URL']
-HUGGINGFACE_USERNAME = app.config['HUGGINGFACE_USERNAME']
+REPO_ID = app.config['REPO_URL']
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -24,23 +23,33 @@ required_dirs = ['uploads', 'models', 'backups', 'instance']
 for dir in required_dirs:
     os.makedirs(os.path.join(os.getcwd(), dir), exist_ok=True)
 
-def clone_repo(repo_url, clone_dir, username, token):
-    if not os.path.exists(clone_dir):
-        os.makedirs(clone_dir, exist_ok=True)
-        repo_url_with_auth = repo_url.replace("https://", f"https://{username}:{token}@")
-        repo = git.Repo.clone_from(repo_url_with_auth, clone_dir, branch='main')
-        # Ensure LFS files are fetched
-        subprocess.run(["git", "lfs", "install"], cwd=clone_dir)
-        subprocess.run(["git", "lfs", "fetch"], cwd=clone_dir)
-        subprocess.run(["git", "lfs", "pull"], cwd=clone_dir)
+class TqdmProgress(tqdm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def update_to(self, blocks=1, bsize=1, tsize=None):
+        if tsize is not None:
+            self.total = tsize
+        self.update(blocks * bsize - self.n)
+
+def download_model(repo_id, model_path, token):
+    if not os.path.exists(model_path):
+        os.makedirs(model_path, exist_ok=True)
+        print(f"Downloading {repo_id} model...")
+        snapshot_download(
+            repo_id,
+            use_auth_token=token,
+            local_dir=model_path,
+            local_dir_use_symlinks=False,
+        )
 
 def load_model(model_path):
-    tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(model_path)
     return tokenizer, model
 
-# Clone the repository if it doesn't exist
-clone_repo(REPO_URL, MODEL_PATH, HUGGINGFACE_USERNAME, HUGGINGFACE_TOKEN)
+# Download model if it doesn't exist
+download_model(REPO_ID, MODEL_PATH, HUGGINGFACE_TOKEN)
 try:
     tokenizer, model = load_model(MODEL_PATH)
 except Exception as e:
@@ -103,7 +112,7 @@ def get_model_response(model_name, message):
     return response
 
 def save_chat_history(user_message, response_message):
-    chat = ChatHistory(user_message=user_message, response_message=response_message)
+    chat = ChatHistory(user_message=user_message, response_message=json.dumps(response_message))
     db.session.add(chat)
     db.session.commit()
 

@@ -26,3 +26,5 @@ python-dotenv
 gitpython
 sentencepiece
 protobuf
+tqdm
+huggingface_hub
