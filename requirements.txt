@@ -1,0 +1,12 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-Login
+Ollama
+Werkzeug
+python-dotenv
+Flask-WTF
+requests
+python-docx
+PyPDF2
+pandas

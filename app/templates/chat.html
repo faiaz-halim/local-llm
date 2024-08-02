@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Chat{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">Chat Interface</div>
+          <div class="card-body" id="chat-window" style="height: 400px; overflow-y: scroll; display: flex; flex-direction: column-reverse;">
+            <!-- Chat history will be appended here -->
+          </div>
+          <div class="card-footer">
+            <form id="chat-form" method="post">
+              <div class="input-group">
+                <input type="text" id="prompt" name="prompt" class="form-control" placeholder="Enter your prompt" required>
+                <button type="submit" class="btn btn-primary">Send</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('chat-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const prompt = document.getElementById('prompt').value;
+      if (prompt.trim() === '') return;
+
+      const chatWindow = document.getElementById('chat-window');
+      const userMessage = document.createElement('div');
+      userMessage.className = 'alert alert-secondary';
+      userMessage.innerHTML = `<strong>You:</strong> ${prompt}`;
+      chatWindow.prepend(userMessage);
+
+      fetch('/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          'prompt': prompt
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        const responseMessage = document.createElement('div');
+        responseMessage.className = 'alert alert-primary';
+        responseMessage.innerHTML = `<strong>Assistant:</strong> ${data.response}`;
+        chatWindow.prepend(responseMessage);
+      })
+      .catch(error => {
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'alert alert-danger';
+        errorMessage.innerHTML = `<strong>Error:</strong> ${error.message}`;
+        chatWindow.prepend(errorMessage);
+      });
+
+      document.getElementById('prompt').value = '';
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Train Model{% endblock %}
+
+{% block content %}
+  <h2>Train Model</h2>
+  <p>Click the button below to train the model using the uploaded documents.</p>
+  <form method="post" action="{{ url_for('train') }}">
+    <p><input type="submit" value="Train Model"></p>
+  </form>
+  <h3>Uploaded Documents</h3>
+  <ul>
+    {% for filename in os.listdir(app.config['UPLOAD_FOLDER']) %}
+      <li>{{ filename }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
