@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Chat History{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Chat History</h2>
+    <div class="accordion" id="chatHistoryAccordion">
+        {% for chat in chats %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{ loop.index }}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                    {{ chat.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+                </button>
+            </h2>
+            <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#chatHistoryAccordion">
+                <div class="accordion-body">
+                    <div class="alert alert-secondary"><strong>You:</strong> {{ chat.prompt }}</div>
+                    <div class="alert alert-primary"><strong>Assistant:</strong> {{ chat.response }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
